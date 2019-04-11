@@ -13,7 +13,7 @@ var template = `package main
 
 import (
 	"github.com/go-pg/pg/orm"
-	"github.com/robinjoseph08/go-pg-migrations"
+	"github.com/jhwang09/go-pg-migrations"
 )
 
 func init() {
