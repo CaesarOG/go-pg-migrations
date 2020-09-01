@@ -11,6 +11,13 @@ import (
 
 var migrations []migration
 
+// UnregisterAll clears all registered migrations. This is udeful when you need
+// to run migrations on multiple databases, and due to thread-unsafe nature of this package,
+// this function must be called between each migrations.Run()
+func UnregisterAll() {
+	migrations = []migration{}
+}
+
 // Register accepts a name, up, down, and options and adds the migration to the
 // global migrations slice.
 func Register(name string, up, down func(orm.DB) error, opts MigrationOptions) {
