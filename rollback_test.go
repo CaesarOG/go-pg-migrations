@@ -1,6 +1,7 @@
 package migrations
 
 import (
+	"fmt"
 	"os"
 	"testing"
 	"time"
@@ -95,6 +96,33 @@ func TestRollback(t *testing.T) {
 		count, err := db.Model(&migration{}).Count()
 		assert.Nil(tt, err)
 		assert.Equal(tt, 1, count)
+	})
+
+	t.Run("only rolls back selected names", func(tt *testing.T) {
+		clearMigrations(tt, db)
+		resetMigrations(tt)
+		migrations = []migration{
+			{Name: "123", Up: noopMigration, Down: noopMigration, Batch: 4, CompletedAt: time.Now()},
+			{Name: "456", Up: noopMigration, Down: noopMigration, Batch: 5, CompletedAt: time.Now()},
+			{Name: "789", Up: noopMigration, Down: noopMigration, Batch: 5, CompletedAt: time.Now()},
+			{Name: "010", Up: noopMigration, Down: noopMigration},
+		}
+
+		m := migrations
+		err := db.Insert(&m)
+		assert.Nil(tt, err)
+
+		err = rollbackNamed(db, tmp, []string{"456", "123"})
+		assert.Nil(tt, err)
+
+		count, err := db.Model(&migration{}).Count()
+		assert.Nil(tt, err)
+		assert.Equal(tt, 2, count)
+
+		var ms []migration
+
+		_ = db.Model(&migration{}).Select(&ms)
+		fmt.Print(ms)
 	})
 
 	t.Run(`runs "down" within a transaction if specified`, func(tt *testing.T) {
