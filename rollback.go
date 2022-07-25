@@ -3,6 +3,7 @@ package migrations
 import (
 	"fmt"
 	"sort"
+	"strings"
 
 	"github.com/go-pg/pg"
 )
@@ -65,7 +66,7 @@ func rollback(db *pg.DB, directory string) error {
 	return nil
 }
 
-func rollbackNamed(db *pg.DB, directory string, mNamesToRollback []string) error {
+func rollbackNamed(db *pg.DB, directory string, _mNamesToRollback string) error {
 	// sort the registered migrations by name (which will sort by the
 	// timestamp in their names)
 	sort.Slice(migrations, func(i, j int) bool {
@@ -77,6 +78,8 @@ func rollbackNamed(db *pg.DB, directory string, mNamesToRollback []string) error
 	if err != nil {
 		return err
 	}
+	_mNamesToRollback = strings.Replace(_mNamesToRollback, " ", "", -1)
+	var mNamesToRollback []string = strings.Split(_mNamesToRollback, ",")
 
 	// acquire the migration lock from the migrations_lock table
 	err = acquireLock(db)
