@@ -111,8 +111,6 @@ func rollbackNamed(db *pg.DB, directory string, _mNamesToRollback string) error 
 
 	if len(rollback) > 0 {
 
-		rollback = filterMigrations(migrations, rollback, true)
-
 		fmt.Printf("Rolling back " + fmt.Sprint(len(rollback)) + " selected migration(s)...\n")
 		for _, m := range rollback {
 			var err error
