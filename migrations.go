@@ -68,7 +68,7 @@ func Run(db *pg.DB, directory string, args []string) error {
 	case "rollback":
 		return rollback(db, directory)
 	case "rollbacknamed":
-		return rollbackNamed(db, directory, args[2:])
+		return rollbackNamed(db, directory, args[2])
 	default:
 		help(directory)
 		return nil

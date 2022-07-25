@@ -112,7 +112,7 @@ func TestRollback(t *testing.T) {
 		err := db.Insert(&m)
 		assert.Nil(tt, err)
 
-		err = rollbackNamed(db, tmp, []string{"456", "123"})
+		err = rollbackNamed(db, tmp, "456, 123")
 		assert.Nil(tt, err)
 
 		count, err := db.Model(&migration{}).Count()
