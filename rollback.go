@@ -98,16 +98,8 @@ func rollbackNamed(db *pg.DB, directory string, _mNamesToRollback string) error 
 		return nil
 	}
 
-	var rollback []migration = []migration{}
-
-	for _, mRecord := range completed {
-
-		for _, name := range mNamesToRollback {
-			if mRecord.Name == name {
-				rollback = append(rollback, mRecord)
-			}
-		}
-	}
+	rollback := *(getMigrationsByName(&completed, &mNamesToRollback))
+	rollback = filterMigrations(migrations, rollback, true)
 
 	if len(rollback) > 0 {
 
@@ -147,6 +139,21 @@ func getMigrationsForBatch(migrations []migration, batch int32) []migration {
 	for _, migration := range migrations {
 		if migration.Batch == batch {
 			m = append(m, migration)
+		}
+	}
+
+	return m
+}
+
+func getMigrationsByName(migrations *[]migration, mNamesToRollback *[]string) *[]migration {
+	var m *[]migration = &[]migration{}
+
+	for _, migration := range *migrations {
+
+		for _, name := range *mNamesToRollback {
+			if migration.Name == name {
+				*m = append(*m, migration)
+			}
 		}
 	}
 
