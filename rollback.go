@@ -1,11 +1,12 @@
 package migrations
 
 import (
+	"context"
 	"fmt"
 	"sort"
 	"strings"
 
-	"github.com/go-pg/pg"
+	"github.com/go-pg/pg/v10"
 )
 
 func rollback(db *pg.DB, directory string) error {
@@ -48,7 +49,8 @@ func rollback(db *pg.DB, directory string) error {
 		if m.DisableTransaction {
 			err = m.Down(db)
 		} else {
-			err = db.RunInTransaction(func(tx *pg.Tx) error {
+			ctx := context.Background()
+			err = db.RunInTransaction(ctx, func(tx *pg.Tx) error {
 				return m.Down(tx)
 			})
 		}
@@ -109,7 +111,8 @@ func rollbackNamed(db *pg.DB, directory string, _mNamesToRollback string) error 
 			if m.DisableTransaction {
 				err = m.Down(db)
 			} else {
-				err = db.RunInTransaction(func(tx *pg.Tx) error {
+				ctx := context.Background()
+				err = db.RunInTransaction(ctx, func(tx *pg.Tx) error {
 					return m.Down(tx)
 				})
 			}
