@@ -1,4 +1,4 @@
-module github.com/cogni-dev/go-pg-migrations
+module github.com/CaesarOG/go-pg-migrations
 
 go 1.13
 
