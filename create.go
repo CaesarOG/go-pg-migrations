@@ -12,7 +12,7 @@ const timeFormat = "20060102150405"
 var template = `package main
 
 import (
-	"github.com/go-pg/pg/orm"
+	"github.com/go-pg/pg/v10/orm"
 	"github.com/jhwang09/go-pg-migrations"
 )
 

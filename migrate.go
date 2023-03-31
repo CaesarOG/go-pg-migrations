@@ -1,12 +1,13 @@
 package migrations
 
 import (
+	"context"
 	"fmt"
 	"sort"
 	"time"
 
-	"github.com/go-pg/pg"
-	"github.com/go-pg/pg/orm"
+	"github.com/go-pg/pg/v10"
+	"github.com/go-pg/pg/v10/orm"
 )
 
 var migrations []migration
@@ -74,7 +75,8 @@ func migrate(db *pg.DB, directory string) error {
 		if m.DisableTransaction {
 			err = m.Up(db)
 		} else {
-			err = db.RunInTransaction(func(tx *pg.Tx) error {
+			ctx := context.Background()
+			err = db.RunInTransaction(ctx, func(tx *pg.Tx) error {
 				return m.Up(tx)
 			})
 		}
@@ -83,7 +85,7 @@ func migrate(db *pg.DB, directory string) error {
 		}
 
 		m.CompletedAt = time.Now()
-		err = db.Insert(&m)
+		_, err = db.Model(&m).Insert()
 		if err != nil {
 			return fmt.Errorf("%s: %s", m.Name, err)
 		}
@@ -126,7 +128,8 @@ func filterMigrations(all, subset []migration, wantCompleted bool) []migration {
 }
 
 func acquireLock(db *pg.DB) error {
-	return db.RunInTransaction(func(tx *pg.Tx) error {
+	ctx := context.Background()
+	return db.RunInTransaction(ctx, func(tx *pg.Tx) error {
 		l := lock{ID: lockID}
 
 		err := tx.Model(&l).
@@ -141,14 +144,15 @@ func acquireLock(db *pg.DB) error {
 
 		l.IsLocked = true
 
-		err = tx.Update(&l)
+		_, err = tx.Model(&l).Update()
 		return err
 	})
 }
 
 func releaseLock(db orm.DB) error {
 	l := lock{ID: lockID, IsLocked: false}
-	return db.Update(&l)
+	_, err := db.Model(&l).Update()
+	return err
 }
 
 func getLastBatchNumber(db orm.DB) (int32, error) {

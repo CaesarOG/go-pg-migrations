@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/go-pg/pg"
-	"github.com/go-pg/pg/orm"
+	"github.com/go-pg/pg/v10"
+	"github.com/go-pg/pg/v10/orm"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -77,7 +77,7 @@ func TestMigrate(t *testing.T) {
 			{Name: "456", Up: noopMigration, Down: noopMigration},
 		}
 
-		err := db.Insert(&migrations[0])
+		_, err := db.Model(&migrations[0]).Insert()
 		assert.Nil(tt, err)
 
 		err = migrate(db, tmp)
@@ -99,7 +99,7 @@ func TestMigrate(t *testing.T) {
 			{Name: "456", Up: noopMigration, Down: noopMigration, Batch: 1, CompletedAt: time.Now()},
 		}
 
-		err := db.Insert(&migrations)
+		_, err := db.Model(&migrations).Insert()
 		assert.Nil(tt, err)
 
 		err = migrate(db, tmp)
@@ -135,7 +135,7 @@ func TestMigrate(t *testing.T) {
 			{Name: "789", Up: noopMigration, Down: noopMigration},
 		}
 
-		err := db.Insert(&migrations[0])
+		_, err := db.Model(&migrations[0]).Insert()
 		assert.Nil(tt, err)
 
 		err = migrate(db, tmp)

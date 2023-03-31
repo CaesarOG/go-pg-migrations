@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/go-pg/pg"
+	"github.com/go-pg/pg/v10"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -83,7 +83,7 @@ func TestRollback(t *testing.T) {
 		}
 
 		m := migrations[:2]
-		err := db.Insert(&m)
+		_, err := db.Model(&m).Insert()
 		assert.Nil(tt, err)
 
 		err = rollback(db, tmp)
@@ -109,7 +109,7 @@ func TestRollback(t *testing.T) {
 		}
 
 		m := migrations
-		err := db.Insert(&m)
+		_, err := db.Model(&m).Insert()
 		assert.Nil(tt, err)
 
 		err = rollbackNamed(db, tmp, "456, 123")
@@ -132,7 +132,7 @@ func TestRollback(t *testing.T) {
 			{Name: "123", Up: noopMigration, Down: erringMigration, DisableTransaction: false, Batch: 1, CompletedAt: time.Now()},
 		}
 
-		err := db.Insert(&migrations)
+		_, err := db.Model(&migrations).Insert()
 		assert.Nil(tt, err)
 
 		err = rollback(db, tmp)
@@ -148,7 +148,7 @@ func TestRollback(t *testing.T) {
 			{Name: "123", Up: noopMigration, Down: erringMigration, DisableTransaction: true, Batch: 1, CompletedAt: time.Now()},
 		}
 
-		err := db.Insert(&migrations)
+		_, err := db.Model(&migrations).Insert()
 		assert.Nil(tt, err)
 
 		err = rollback(db, tmp)
